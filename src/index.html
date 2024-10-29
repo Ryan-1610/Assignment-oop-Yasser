@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Travel Offers and Advisories</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<style>
+		/* Basic Reset */
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		body {
+			font-family: 'Poppins', sans-serif;
+			color: #333;
+			background-color: #f3f3f3;
+			overflow-y: scroll; /* Allow scrolling without showing scrollbar */
+		}
+		/* Hide scrollbar */
+		body::-webkit-scrollbar {
+			display: none; /* Chrome, Safari, Edge */
+		}
+		body {
+			-ms-overflow-style: none; /* Internet Explorer 10+ */
+			scrollbar-width: none; /* Firefox */
+		}
+
+		/* Traveller Advisories Section */
+		.advisory {
+			position: relative;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: url('Media/Picture/Travel2.jpeg') center center/cover no-repeat;
+		}
+		.advisory-container {
+			text-align: center;
+			background: rgba(0, 0, 0, 0.7);
+			padding: 40px;
+			border-radius: 15px;
+			box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+			width: 90%;
+			max-width: 600px;
+			z-index: 1;
+		}
+		.advisory h1 {
+			font-family: 'Playfair Display', serif;
+			font-size: 3em;
+			color: #ffd700;
+			margin-bottom: 15px;
+		}
+		h2 {
+			font-size: 2em;
+		}
+		.advisory p {
+			font-size: 1.2em;
+			color: #d4d4d4;
+			margin-bottom: 30px;
+		}
+		.input-field {
+			width: 100%;
+			padding: 15px;
+			margin-bottom: 25px;
+			border-radius: 8px;
+			border: 2px solid #333;
+			background-color: #111111aa;
+			color: #fff;
+			font-size: 1.1em;
+		}
+		.input-field:focus {
+			border: 2px solid #ffd700;
+			outline: none;
+		}
+		button {
+			padding: 12px 24px;
+			border: none;
+			border-radius: 8px;
+			background: #ffd900;
+			color: #000;
+			font-size: 1.2em;
+			font-weight: 600;
+			cursor: pointer;
+		}
+		button:hover {
+			background: #e6c200;
+			box-shadow: 0 8px 16px rgba(255, 215, 0, 0.4);
+			transform: translateY(-3px);
+		}
+
+		/* Main Page Sections */
+		section {
+			padding: 40px;
+			text-align: center;
+		}
+		.offers, .explore-nature, .newsletter, .contact {
+			background-color: #fff;
+			margin: 20px auto;
+			max-width: 1200px;
+		}
+		.offer-grid, .nature-grid {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			justify-content: center;
+		}
+		.offer-item, .nature-item {
+			width: 48%;
+			position: relative;
+		}
+		.offer-item img, .nature-item img {
+			width: 100%;
+			border-radius: 5px;
+		}
+		.newsletter form, .contact-form {
+			display: flex;
+			justify-content: center;
+			gap: 10px;
+			flex-direction: column;
+			align-items: center;
+		}
+		.newsletter input[type="email"], .contact-form input, .contact-form textarea {
+			width: 100%;
+			max-width: 400px;
+			padding: 10px;
+			margin: 5px 0;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+		}
+		.contact-form button {
+			background-color: #000;
+			color: #fff;
+			width: 100%;
+			padding: 10px;
+			border-radius: 5px;
+		}
+		footer {
+			text-align: center;
+			padding: 20px;
+			background-color: #333;
+			color: #fff;
+		}
+	</style>
+</head>
+<body>
+
+	<!-- Traveller Advisories Section -->
+	<section class="advisory">
+		<div class="advisory-container">
+			<h1>Traveller Advisories</h1>
+			<p>Where would you like to travel?</p>
+			<input type="text" id="city_input" class="input-field" placeholder="Enter city name">
+			<button id="goDetails">Show Travel Details</button>
+		</div>
+	</section>
+
+	<section class="explore-nature">
+		<h2>Travel with us now</h2>
+		<p>Top recommended places</p></br>
+		<div class="nature-grid">
+			<div class="nature-item">
+				<img src="Media/Picture/KL.jpg" >
+				<div class="text">
+					<h3>Kuala Lumpur, Malaysia</h3>
+					<button id="goDetails1">Go travel</button>
+				</div>
+			</div><div class="nature-item">
+				<img src="Media/Picture/Travel1.jpg" >
+				<div class="text">
+					<h3>New York City</h3>
+					<button id="goDetails2">Go travel</button>
+				</div></br>
+			</div><div class="nature-item">
+				<img src="Media/Picture/Italy.jpg" >
+				<div class="text">
+					<h3>Sorrento, Italy</h3>
+					<button id="goDetails3">Go travel</button>
+				</div>
+			</div><div class="nature-item">
+				<img src="Media/Picture/Japan.jpg" >
+				<div class="text">
+					<h3>Tokyo, Japan</h3>
+					<button id="goDetails4">Go travel</button>
+				</div></br>
+			</div><div class="nature-item">
+				<img src="Media/Picture/Sabah.jpg" >
+				<div class="text">
+					<h3>Pulau Mabul, Malaysia</h3>
+					<button id="goDetails5">Go travel</button>
+				</div>
+			</div><div class="nature-item">
+				<img src="Media/Picture/Iceland.jpg" >
+				<div class="text">
+					<h3>Skaftafell, Iceland</h3>
+					<button id="goDetails6">Go travel</button>
+				</div></br>
+			</div><div class="nature-item">
+				<img src="Media/Picture/Indonesia.jpg" >
+				<div class="text">
+					<h3>Flores Island, Indonesia</h3>
+					<button id="goDetails7">Go travel</button>
+				</div>
+			</div><div class="nature-item">
+				<img src="Media/Picture/Thailand.jpg" >
+				<div class="text">
+					<h3>Chiang Mai, Thailand</h3>
+					<button id="goDetails8">Go travel</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer>
+		<p>Find Us On </p>
+			<div class="w3-xlarge w3-padding-16">
+				<i class="fa fa-facebook-official w3-hover-opacity"></i>
+				<i class="fa fa-instagram w3-hover-opacity"></i>
+				<i class="fa fa-snapchat w3-hover-opacity"></i>
+				<i class="fa fa-pinterest-p w3-hover-opacity"></i>
+				<i class="fa fa-twitter w3-hover-opacity"></i>
+				<i class="fa fa-linkedin w3-hover-opacity"></i>
+		  </div>
+		<p>Powered by Travel Advisories</p>
+	</footer>
+
+	<script>
+		document.getElementById("goDetails").addEventListener("click", function() {
+			var city = document.getElementById("city_input").value.trim();
+			if (city === "") {
+				alert("Please enter a city name");
+			} else {
+				window.location.href = `travel_details.html?city=${encodeURIComponent(city)}`;
+			}
+		});
+		document.getElementById("goDetails1").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=Kuala Lumpur`;
+		});
+		document.getElementById("goDetails2").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=New York`;
+		});
+		document.getElementById("goDetails3").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=Sorrento`;
+		});
+		document.getElementById("goDetails4").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=Tokyo`;
+		});
+		document.getElementById("goDetails5").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=Sabah`;
+		});
+		document.getElementById("goDetails6").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=Skaftafell`;
+		});
+		document.getElementById("goDetails7").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=Indonesia`;
+		});
+		document.getElementById("goDetails8").addEventListener("click", function() {
+			window.location.href = `travel_details.html?city=Chiang Mai`;
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Travel Itineraries</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Poppins', sans-serif;
+			margin: 0;
+			padding: 0;
+			background: #f3f6f9;
+			color: #333;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			flex-direction: column;
+		}
+		/* Navbar Styling */
+		.navbar {
+			width: 100%;
+			background: #0077b6; /* Bold, obvious color */
+			padding: 15px 0;
+			position: fixed;
+			top: 0;
+			left: 0;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			z-index: 10;
+			display: flex;
+			justify-content: center;
+		}
+		.navbar a {
+			color: #ffffff;
+			text-decoration: none;
+			font-weight: bold;
+			font-size: 1.2em;
+			margin: 0 30px;
+			padding: 10px 15px;
+			border-radius: 5px;
+			transition: background 0.3s ease;
+		}
+		.navbar a:hover {
+			background: rgba(255, 255, 255, 0.3);
+		}
+		.container {
+			margin-top: 80px;
+			width: 100%;
+			max-width: 600px;
+			padding: 20px;
+			background: white;
+			border-radius: 10px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			text-align: center;
+		}
+		h1 {
+			font-size: 2em;
+			color: #4a90e2;
+			margin-bottom: 20px;
+		}
+		.input-field, .button {
+			width: 90%;
+			padding: 10px;
+			margin-top: 10px;
+			border-radius: 5px;
+			border: 1px solid #ddd;
+		}
+		.button {
+			background-color: #4a90e2;
+			color: white;
+			font-weight: bold;
+			cursor: pointer;
+			border: none;
+			transition: background 0.3s ease;
+		}
+		.button:hover {
+			background-color: #357abd;
+		}
+		.itinerary-list {
+			margin-top: 20px;
+		}
+		.itinerary-item {
+			margin: 10px 0;
+			padding: 15px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+		}
+		.button.delete {
+			background-color: #c31501;
+			margin-top: 10px;
+		}
+		.button.update {
+			background-color: #0abb00;
+			margin-top: 10px;
+		}
+	</style>
+</head>
+<body>
+
+	<!-- Navigation Bar -->
+	<div class="navbar">
+		<a id="travelInfoLink" href="#">Travel Info</a>
+		<a id="homeLink" href="#">Home</a>
+		<a id="itinerariesLink" href="#">Travel Itineraries</a>
+	</div>
+
+	<!-- Main Content Container -->
+	<div class="container">
+		<h1>Travel Itineraries</h1>
+
+		<!-- Create Itinerary Form -->
+		<form id="itineraryForm">
+			<input type="text" id="destination" class="input-field" placeholder="Destination (No Shortform)" required>
+			<input type="date" id="date" class="input-field" required>
+			<textarea id="details" class="input-field" placeholder="Itinerary Details" rows="3"></textarea>
+			<button type="submit" class="button">Add Itinerary</button>
+		</form>
+
+		<!-- Display Itineraries -->
+		<div class="itinerary-list" id="itineraryList">
+			<!-- Itinerary items will be displayed here -->
+		</div>
+	</div>
+
+	<script>
+		// Extract the 'city' parameter from the URL
+		const urlParams = new URLSearchParams(window.location.search);
+		const city = urlParams.get('city');
+
+		// If 'city' is present, set it as the value for the destination input
+		if (city) {
+			document.getElementById("destination").value = city;
+		}
+
+		// Update navbar links with city parameter
+		const homeLink = document.getElementById("homeLink");
+		const travelInfoLink = document.getElementById("travelInfoLink");
+		const itinerariesLink = document.getElementById("itinerariesLink");
+
+		homeLink.href = `index.html?city=${encodeURIComponent(city)}`;
+		travelInfoLink.href = `travel_details.html?city=${encodeURIComponent(city)}`;
+		itinerariesLink.href = `itineraries.html?city=${encodeURIComponent(city)}`;
+
+		document.addEventListener("DOMContentLoaded", () => {
+			const itineraryForm = document.getElementById("itineraryForm");
+			const itineraryList = document.getElementById("itineraryList");
+
+			// Load itineraries from local storage
+			function loadItineraries() {
+				itineraryList.innerHTML = "";
+				const itineraries = JSON.parse(localStorage.getItem("itineraries")) || [];
+				itineraries.forEach((itinerary, index) => displayItinerary(itinerary, index));
+			}
+
+			// Display an itinerary with weather and clothing recommendation
+			function displayItinerary(itinerary, index) {
+				const itineraryItem = document.createElement("div");
+				itineraryItem.classList.add("itinerary-item");
+
+				// Fetch weather based on date and destination
+				fetchWeather(itinerary.destination, itinerary.date)
+					.then(weatherData => {
+						const clothingRecommendation = getClothingRecommendation(weatherData);
+
+						itineraryItem.innerHTML = `
+							<p><strong>Destination:</strong> ${itinerary.destination}</p>
+							<p><strong>Date:</strong> ${itinerary.date}</p>
+							<p><strong>Weather:</strong> ${weatherData.weather}</p>
+							<p><strong>Average Temperature:</strong> ${weatherData.temp}°C</p>
+							<p><strong>Clothing Recommendation:</strong> ${clothingRecommendation}</p>
+							<p><strong>Details:</strong> ${itinerary.details}</p>
+							<button class="button update" onclick="editItinerary(${index})">Edit</button>
+							<button class="button delete" onclick="deleteItinerary(${index})">Delete</button>
+						`;
+						itineraryList.appendChild(itineraryItem);
+					})
+					.catch(error => {
+						console.error("Error fetching weather:", error);
+					});
+			}
+
+			// Add itinerary
+			itineraryForm.addEventListener("submit", (event) => {
+				event.preventDefault();
+				const itineraries = JSON.parse(localStorage.getItem("itineraries")) || [];
+
+				const newItinerary = {
+					destination: document.getElementById("destination").value,
+					date: document.getElementById("date").value,
+					details: document.getElementById("details").value
+				};
+
+				itineraries.push(newItinerary);
+				localStorage.setItem("itineraries", JSON.stringify(itineraries));
+
+				itineraryForm.reset();
+				loadItineraries();
+			});
+
+			// Edit itinerary
+			window.editItinerary = function(index) {
+				const itineraries = JSON.parse(localStorage.getItem("itineraries"));
+				const itinerary = itineraries[index];
+
+				document.getElementById("destination").value = itinerary.destination;
+				document.getElementById("date").value = itinerary.date;
+				document.getElementById("details").value = itinerary.details;
+
+				itineraries.splice(index, 1);
+				localStorage.setItem("itineraries", JSON.stringify(itineraries));
+				loadItineraries();
+			}
+
+			// Delete itinerary
+			window.deleteItinerary = function(index) {
+				const itineraries = JSON.parse(localStorage.getItem("itineraries"));
+				itineraries.splice(index, 1);
+				localStorage.setItem("itineraries", JSON.stringify(itineraries));
+				loadItineraries();
+			}
+
+			// Fetch weather and temperature
+			function fetchWeather(city, date) {
+				const weatherApiKey = '32804b24a847407391c53709241010';
+				return fetch(`https://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${city}&dt=${date}`)
+					.then(response => response.json())
+					.then(data => ({
+						weather: data.forecast.forecastday[0].day.condition.text,
+						temp: data.forecast.forecastday[0].day.avgtemp_c
+					}))
+					.catch(error => {
+						console.error("Error fetching weather data:", error);
+						return { weather: "Weather data unavailable", temp: null };
+					});
+			}
+
+			// Clothing recommendation based on weather and temperature
+			function getClothingRecommendation(weatherData) {
+				const { weather, temp } = weatherData;
+				let recommendation = "Comfortable clothing";
+
+				if (temp <= 10) {
+					recommendation = "Heavy winter wear, coat, gloves";
+				} else if (temp > 10 && temp <= 20) {
+					recommendation = "Light jacket or sweater";
+				} else if (temp > 20 && temp <= 30) {
+					recommendation = "Short sleeves, light clothing";
+				} else if (temp > 30) {
+					recommendation = "Very light clothing, stay hydrated";
+				}
+
+				if (weather.includes("rain") || weather.includes("shower")) {
+					recommendation += ", and bring an umbrella!";
+				} else if (weather.includes("snow")) {
+					recommendation += ", wear waterproof shoes and warm layers.";
+				}
+
+				return recommendation;
+			}
+
+			// Initial load
+			loadItineraries();
+		});
+	</script>
+
+</body>
+</html>

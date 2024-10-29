@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Travel Details</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+	<style>
+		/* General Styling */
+		body {
+			font-family: 'Poppins', sans-serif;
+			margin: 0;
+			padding: 0;
+			background: #f3f6f9; /* Light and cloudy background */
+			color: #333; /* Dark text for contrast */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			flex-direction: column;
+		}
+
+		/* Navbar Styling */
+		.navbar {
+			width: 100%;
+			background: #0077b6; /* Bold, obvious color */
+			padding: 15px 0;
+			position: fixed;
+			top: 0;
+			left: 0;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			z-index: 10;
+			display: flex;
+			justify-content: center;
+		}
+		.navbar a {
+			color: #ffffff;
+			text-decoration: none;
+			font-weight: bold;
+			font-size: 1.2em;
+			margin: 0 30px;
+			padding: 10px 15px;
+			border-radius: 5px;
+			transition: background 0.3s ease;
+		}
+		.navbar a:hover {
+			background: rgba(255, 255, 255, 0.3);
+		}
+
+		/* Main Container Styling */
+		.container {
+			margin-top: 80px;
+			padding: 30px;
+			max-width: 700px;
+			background: #ffffff;
+			border-radius: 10px;
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+			color: #333;
+			text-align: center;
+		}
+
+		h2 {
+			font-size: 2em;
+			color: #4a90e2;
+			margin-bottom: 20px;
+		}
+
+		.travel-info, .hourly-forecast {
+			line-height: 1.6;
+			font-size: 1em;
+			color: #555;
+			text-align: left;
+		}
+
+		.show-hourly {
+			margin-top: 20px;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 5px;
+			background: #4a90e2;
+			color: #ffffff;
+			font-size: 1em;
+			cursor: pointer;
+			transition: background 0.3s ease;
+		}
+		.show-hourly:hover {
+			background: #357abd;
+		}
+
+		/* Forecast Item Styling */
+		.hourly-forecast {
+			display: flex;
+			overflow-x: auto;
+			gap: 10px;
+			margin-top: 20px;
+			padding-bottom: 10px;
+		}
+		.forecast-item {
+			flex: 1 1 150px;
+			padding: 15px;
+			background: #f7f9fc;
+			border-radius: 8px;
+			border: 1px solid #e0e0e0;
+			text-align: center;
+			color: #555;
+		}
+		.forecast-item p {
+			margin: 5px 0;
+			color: #555;
+		}
+		.forecast-item img {
+			width: 40px;
+			height: 40px;
+			vertical-align: middle;
+		}
+
+		/* Mobile Responsiveness */
+		@media (max-width: 768px) {
+			h2 {
+				font-size: 1.8em;
+			}
+			.hourly-forecast {
+				flex-direction: row;
+			}
+		}
+	</style>
+</head>
+<body>
+	<!-- Navigation Bar -->
+	<div class="navbar">
+		<a id="travelInfoLink" href="#">Travel Info</a>
+		<a id="homeLink" href="#">Home</a>
+		<a id="itinerariesLink" href="#">Travel Itineraries</a>
+	</div>
+
+	<!-- Main Content -->
+	<div class="container">
+		<h2 id="city_name">Travel Details</h2>
+		<div class="travel-info" id="weather_info">
+			<!-- Travel details will be displayed here -->
+		</div>
+		<button class="show-hourly" id="showHourlyBtn">Show Hourly Forecast</button>
+		<button class="show-hourly" id="createitineraries">Create Itineraries</button>
+		<div class="hourly-forecast" id="hourly_forecast">
+			<!-- Hourly forecast details will be displayed here -->
+		</div>
+	</div>
+
+	<script>
+		// Extract the city name from the query parameter
+		const urlParams = new URLSearchParams(window.location.search);
+		const city = urlParams.get('city');
+	
+		if (city) {
+			document.getElementById("city_name").innerText = `Travel Details for ${city}`;
+	
+			// Fetching weather details for the city
+			fetch(`https://api.weatherapi.com/v1/forecast.json?key=32804b24a847407391c53709241010&q=${city}`)
+				.then(response => response.json())
+				.then(data => {
+					const temp = data.current.temp_c;
+					const weather = data.current.condition.text;
+					const clothingRecommendation = getClothingRecommendation(temp, weather);
+
+					let info = `
+						<p><strong>Location:</strong> ${data.location.name}, ${data.location.region}, ${data.location.country}</p>
+						<p><strong>Local time:</strong> ${data.location.localtime}</p>
+						<p><strong>Sunrise:</strong> ${data.forecast.forecastday[0].astro.sunrise}</p>
+						<p><strong>Sunset:</strong> ${data.forecast.forecastday[0].astro.sunset}</p>
+						<p><strong>Current Temperature:</strong> ${data.current.temp_c}°C</p>
+						<p><strong>Feels Like:</strong> ${data.current.feelslike_c}°C</p>
+						<p><strong>Forecast Temperature:</strong> ${data.forecast.forecastday[0].day.avgtemp_c}°C</p>
+						<p><strong>Weather Description:</strong> ${data.current.condition.text}</p>
+						<p><strong>Wind Speed:</strong> ${data.current.wind_kph} km/h</p>
+						<p><strong>Humidity: </strong> ${data.current.humidity}</p>
+						<p><strong>Clothing Recommendation:</strong> ${clothingRecommendation}</p>					
+						`; 
+					document.getElementById("weather_info").innerHTML = info;
+	
+					// Handle displaying hourly forecast when button is clicked
+					document.getElementById("showHourlyBtn").addEventListener("click", () => {
+						displayHourlyForecast(data.forecast.forecastday[0].hour);
+					});
+				})
+				.catch(error => {
+					console.error('Error fetching the data:', error);
+					document.getElementById("weather_info").innerHTML = `<p>Unable to fetch data. Please try again later.</p>`;
+				});
+		} else {
+			document.getElementById("weather_info").innerHTML = "<p>City not specified.</p>";
+		}
+		
+		// Update navbar links with city parameter
+		const homeLink = document.getElementById("homeLink");
+		const travelInfoLink = document.getElementById("travelInfoLink");
+		const itinerariesLink = document.getElementById("itinerariesLink");
+
+		homeLink.href = `index.html?city=${encodeURIComponent(city)}`;
+		travelInfoLink.href = `travel_details.html?city=${encodeURIComponent(city)}`;
+		itinerariesLink.href = `itineraries.html?city=${encodeURIComponent(city)}`;
+
+		// "Create Itineraries" Button Click Event
+		document.getElementById("createitineraries").addEventListener("click", function() {
+			window.location.href = `itineraries.html?city=${encodeURIComponent(city)}`;
+		});
+	
+		// Function to display hourly forecast
+		function displayHourlyForecast(hourlyData) {
+			const hourlyForecastDiv = document.getElementById("hourly_forecast");
+			hourlyForecastDiv.innerHTML = "";
+	
+			// Array of times to show
+			const timesToShow = ["06:00", "13:00", "16:00", "20:00", "00:00"];
+			
+			hourlyData.forEach((hour) => {
+				const time = hour.time.split(" ")[1];
+				if (timesToShow.includes(time)) { // Only display specified times
+					let forecastItem = `
+						<div class="forecast-item">
+							<p><strong>Time</strong></br>${time}</p>
+							<img src="https:${hour.condition.icon}" alt="${hour.condition.text}" />
+							<p>${hour.temp_c}°C</p>
+							<p><strong>${hour.condition.text}</strong></p>
+						</div>
+					`;
+					hourlyForecastDiv.innerHTML += forecastItem;
+				}
+			});
+		}
+
+		// Clothing recommendation based on temperature and weather
+		function getClothingRecommendation(temp, weather) {
+			let recommendation = "Comfortable clothing";
+
+			if (temp <= 10) {
+				recommendation = "Heavy winter wear, coat, gloves";
+			} else if (temp > 10 && temp <= 20) {
+				recommendation = "Light jacket or sweater";
+			} else if (temp > 20 && temp <= 30) {
+				recommendation = "Short sleeves, light clothing";
+			} else if (temp > 30) {
+				recommendation = "Very light clothing, stay hydrated";
+			}
+
+			if (weather.toLowerCase().includes("rain") || weather.toLowerCase().includes("shower")) {
+				recommendation += ", and bring an umbrella!";
+			} else if (weather.toLowerCase().includes("snow")) {
+				recommendation += ", wear waterproof shoes and warm layers.";
+			}
+
+			return recommendation;
+		}
+	</script>
+</body>
+</html>
